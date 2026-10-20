@@ -2,8 +2,8 @@ name: Export Godot Game
 
 on:
   push:
-    branches: [ main ] 
-  workflow_dispatch: 
+    branches: [ main ]
+  workflow_dispatch:
 
 env:
   GODOT_VERSION: "4.7.2"        
@@ -19,7 +19,7 @@ jobs:
         include:
           - preset: "Windows Desktop"
             artifact: windows
-            output_path: build/windows/${{ env.EXPORT_NAME }}.exe
+            output_path: build/windows/MyGame.exe
           - preset: "Web"
             artifact: web
             output_path: build/web/index.html
@@ -28,14 +28,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 
+          fetch-depth: 0
 
       - name: Set up Godot ${{ env.GODOT_VERSION }}
         uses: chickensoft-games/setup-godot@v2
         with:
           version: ${{ env.GODOT_VERSION }}
-          use-dotnet: false       # true если проект на C#
-          include-templates: true # устанавливает экспортные шаблоны
+          use-dotnet: false
+          include-templates: true
 
       - name: Create output directory
         run: mkdir -p $(dirname ${{ matrix.output_path }})
@@ -47,6 +47,6 @@ jobs:
       - name: Upload artifact — ${{ matrix.artifact }}
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.EXPORT_NAME }}-${{ matrix.artifact }}
+          name: ${{ env.EXPORT_NAME }}-${{ matrix.artifact }} 
           path: build/${{ matrix.artifact }}/
           if-no-files-found: error
