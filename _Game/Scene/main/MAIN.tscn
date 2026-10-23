@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://d1n6oc3tfm8ls"]
 
 [ext_resource type="Script" uid="uid://qvgce1fhwijs" path="res://_Game/Scene/main/player.gd" id="1_dyvsr"]
+[ext_resource type="PackedScene" uid="uid://b1ixog1pe44pk" path="res://_Game/Scene/bullet/bullet.tscn" id="2_67t6u"]
+[ext_resource type="PackedScene" uid="uid://b6q1x3okocxa6" path="res://_Game/Scene/enemy/enemy.tscn" id="3_w20bv"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_hl1nl"]
 
@@ -11,12 +13,16 @@
 [node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=1616475035]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8171024, 0)
 script = ExtResource("1_dyvsr")
+BulletScene = ExtResource("2_67t6u")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D" unique_id=2129612299]
 shape = SubResource("CapsuleShape3D_hl1nl")
 
 [node name="Camera3D" type="Camera3D" parent="CharacterBody3D" unique_id=2140634615]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="Muzzle" type="Marker3D" parent="CharacterBody3D/Camera3D" unique_id=1806626888]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.03)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=1023346647]
 transform = Transform3D(100, 0, 0, 0, 0.1, 0, 0, 0, 100, 0, 0, 0)
@@ -27,3 +33,6 @@ transform = Transform3D(1.0000001, 0, 0, 0, 1, 0, 0, 0, 1.0000001, 0, 0, 0)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CSGBox3D/StaticBody3D" unique_id=544494759]
 transform = Transform3D(0.99999976, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999976, 0, 0, 0)
 shape = SubResource("BoxShape3D_hl1nl")
+
+[node name="Enemy" parent="." unique_id=1859471518 instance=ExtResource("3_w20bv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5227563, 2.6736915)
