@@ -6,8 +6,8 @@ on:
   workflow_dispatch:
 
 env:
-  GODOT_VERSION: "4.7.2"        
-  EXPORT_NAME: "MyGame"        
+  GODOT_VERSION: "4.7.2"
+  EXPORT_NAME: "MyGame"
 
 jobs:
   export:
@@ -44,9 +44,15 @@ jobs:
         run: |
           godot --headless --export-release "${{ matrix.preset }}" "${{ matrix.output_path }}"
 
+      - name: Copy launcher files for Web
+        if: matrix.preset == 'Web'
+        run: |
+          cp start_web.bat build/web/
+          cp serve.py build/web/
+
       - name: Upload artifact — ${{ matrix.artifact }}
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.EXPORT_NAME }}-${{ matrix.artifact }} 
+          name: ${{ env.EXPORT_NAME }}-${{ matrix.artifact }}
           path: build/${{ matrix.artifact }}/
           if-no-files-found: error
