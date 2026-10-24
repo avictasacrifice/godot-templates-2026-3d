@@ -17,6 +17,7 @@ glow_normalized = true
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_hl1nl"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lp5t8"]
+albedo_color = Color(1, 1, 0.48235294, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hl1nl"]
 
@@ -80,7 +81,6 @@ offset_right = 34562.0
 offset_bottom = 26624.0
 mouse_filter = 2
 script = ExtResource("5_53km8")
-palette_mode = "gameboy"
 
 [node name="Light" type="Node3D" parent="." unique_id=1854685419]
 

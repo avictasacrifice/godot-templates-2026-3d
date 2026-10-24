@@ -7,10 +7,13 @@ const int MAX_COLORS = 64;
 uniform vec3 palette[MAX_COLORS];
 uniform int palette_size = 16;
 
-uniform int dither_mode = 2; // 0-без, 1-bayer2, 2-bayer4, 3-bayer8, 4-IGN
+uniform int dither_mode = 2; 
 uniform bool auto_strength = true;
 uniform float dither_strength = 0.4;
 uniform float pattern_scale = 1.0;
+
+// НОВОЕ: Сила экранного шума (ставим по умолчанию 0.03)
+uniform float noise_amount : hint_range(0.0, 0.5) = 0.03;
 
 // Матрицы Байера
 const float BAYER2[4] = float[4](0.0, 2.0, 3.0, 1.0);
@@ -42,6 +45,11 @@ float ign(vec2 p) {
     return fract(52.9829189 * fract(dot(p, vec2(0.06711056, 0.00583715))));
 }
 
+// НОВОЕ: Функция генерации случайного шума для каждого пикселя
+float hash(vec2 p) {
+    return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
 vec3 quantize(vec3 c) {
     if (palette_size <= 0) return c;
     vec3 best = palette[0];
@@ -69,6 +77,11 @@ void fragment() {
     float strength = auto_strength ? (1.0 / pow(max(float(palette_size), 1.0), 1.0 / 3.0)) : dither_strength;
 
     col += d * strength;
+
+    // НОВОЕ: Добавляем случайный шум к цвету, чтобы разбить идеальные градиенты
+    float n = hash(ip) - 0.5; 
+    col += n * noise_amount;
+
     col = clamp(col, 0.0, 1.0);
     col = quantize(col);
 
