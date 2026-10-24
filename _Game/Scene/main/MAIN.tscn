@@ -7,8 +7,12 @@
 [ext_resource type="Script" uid="uid://budg5tjkdblb7" path="res://_Game/Scene/main/palette_controller.gd" id="5_53km8"]
 
 [sub_resource type="Environment" id="Environment_hl1nl"]
-ambient_light_color = Color(0.6757189, 0.4086251, 0.5439391, 1)
+background_mode = 1
+background_color = Color(0.22670749, 0.22670752, 0.22670743, 1)
+background_energy_multiplier = 0.82
+ambient_light_source = 1
 glow_enabled = true
+glow_normalized = true
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_hl1nl"]
 
@@ -59,7 +63,6 @@ shape = SubResource("BoxShape3D_hl1nl")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5227563, 2.6736915)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1358943668]
-visible = false
 
 [node name="Shader" type="Control" parent="CanvasLayer" unique_id=1735017546]
 layout_mode = 3
@@ -82,4 +85,5 @@ palette_mode = "gameboy"
 [node name="Light" type="Node3D" parent="." unique_id=1854685419]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="Light" unique_id=1669331146]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+transform = Transform3D(0.6040323, -0.58093125, 0.54558593, 0.398339, 0.81300884, 0.42466766, -0.6902688, -0.03918485, 0.72249115, 0, 2, 0)
+shadow_enabled = true
