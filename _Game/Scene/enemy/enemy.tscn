@@ -4,6 +4,8 @@
 
 [sub_resource type="BoxMesh" id="BoxMesh_1jhmp"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_brgqv"]
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_hl1nl"]
 
 [node name="Enemy" type="StaticBody3D" unique_id=630593048]
@@ -13,6 +15,7 @@ script = ExtResource("1_imd7w")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1149368254]
 mesh = SubResource("BoxMesh_1jhmp")
+surface_material_override/0 = SubResource("StandardMaterial3D_brgqv")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=322321871]
 shape = SubResource("BoxShape3D_hl1nl")

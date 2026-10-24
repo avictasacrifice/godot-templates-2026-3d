@@ -3,12 +3,32 @@
 [ext_resource type="Script" uid="uid://qvgce1fhwijs" path="res://_Game/Scene/main/player.gd" id="1_dyvsr"]
 [ext_resource type="PackedScene" uid="uid://b1ixog1pe44pk" path="res://_Game/Scene/bullet/bullet.tscn" id="2_67t6u"]
 [ext_resource type="PackedScene" uid="uid://b6q1x3okocxa6" path="res://_Game/Scene/enemy/enemy.tscn" id="3_w20bv"]
+[ext_resource type="Shader" uid="uid://6vvrsg3cndc6" path="res://_Game/Scene/main/dither.gdshader" id="4_3njoo"]
+[ext_resource type="Script" uid="uid://budg5tjkdblb7" path="res://_Game/Scene/main/palette_controller.gd" id="5_53km8"]
+
+[sub_resource type="Environment" id="Environment_hl1nl"]
+ambient_light_color = Color(0.6757189, 0.4086251, 0.5439391, 1)
+glow_enabled = true
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_hl1nl"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lp5t8"]
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_hl1nl"]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1jhmp"]
+shader = ExtResource("4_3njoo")
+shader_parameter/palette = PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/palette_size = 16
+shader_parameter/dither_mode = 2
+shader_parameter/auto_strength = true
+shader_parameter/dither_strength = 0.4
+shader_parameter/pattern_scale = 1.0
+
 [node name="Main" type="Node3D" unique_id=223283744]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1217041312]
+environment = SubResource("Environment_hl1nl")
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=1616475035]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8171024, 0)
@@ -26,6 +46,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.03)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=1023346647]
 transform = Transform3D(100, 0, 0, 0, 0.1, 0, 0, 0, 100, 0, 0, 0)
+material = SubResource("StandardMaterial3D_lp5t8")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="CSGBox3D" unique_id=1345396934]
 transform = Transform3D(1.0000001, 0, 0, 0, 1, 0, 0, 0, 1.0000001, 0, 0, 0)
@@ -36,3 +57,29 @@ shape = SubResource("BoxShape3D_hl1nl")
 
 [node name="Enemy" parent="." unique_id=1859471518 instance=ExtResource("3_w20bv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5227563, 2.6736915)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1358943668]
+visible = false
+
+[node name="Shader" type="Control" parent="CanvasLayer" unique_id=1735017546]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/Shader" unique_id=1958529771]
+material = SubResource("ShaderMaterial_1jhmp")
+layout_mode = 0
+offset_right = 34562.0
+offset_bottom = 26624.0
+mouse_filter = 2
+script = ExtResource("5_53km8")
+palette_mode = "gameboy"
+
+[node name="Light" type="Node3D" parent="." unique_id=1854685419]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Light" unique_id=1669331146]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
