@@ -29,6 +29,7 @@ shader_parameter/dither_mode = 2
 shader_parameter/auto_strength = true
 shader_parameter/dither_strength = 0.4
 shader_parameter/pattern_scale = 1.0
+shader_parameter/noise_amount = 0.03
 
 [node name="Main" type="Node3D" unique_id=223283744]
 

@@ -56,6 +56,7 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 func shoot() -> void:
+	Audio.play(&"shot")
 	var bullet := BulletScene.instantiate()
 	get_tree().current_scene.add_child(bullet)
 	bullet.global_transform = muzzle.global_transform

@@ -1,0 +1,14 @@
+MeshInstance3D
+DirectionalLight3D
+Node3D
+WorldEnvironment
+ColorRect
+Control
+TextureRect
+CanvasLayer
+CollisionShape3D
+StaticBody3D
+Marker3D
+Area3D
+CSGBox3D
+Camera3D
