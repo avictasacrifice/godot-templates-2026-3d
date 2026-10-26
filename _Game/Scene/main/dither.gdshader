@@ -7,13 +7,13 @@ const int MAX_COLORS = 64;
 uniform vec3 palette[MAX_COLORS];
 uniform int palette_size = 16;
 
-uniform int dither_mode = 2; 
+uniform int dither_mode = 2;
 uniform bool auto_strength = true;
 uniform float dither_strength = 0.4;
 uniform float pattern_scale = 1.0;
 
-// НОВОЕ: Сила экранного шума (ставим по умолчанию 0.03)
-uniform float noise_amount : hint_range(0.0, 0.5) = 0.03;
+// Зерно (перенесено из второго шейдера)
+uniform float grain_strength : hint_range(0.0, 0.5) = 0.025;
 
 // Матрицы Байера
 const float BAYER2[4] = float[4](0.0, 2.0, 3.0, 1.0);
@@ -45,9 +45,10 @@ float ign(vec2 p) {
     return fract(52.9829189 * fract(dot(p, vec2(0.06711056, 0.00583715))));
 }
 
-// НОВОЕ: Функция генерации случайного шума для каждого пикселя
-float hash(vec2 p) {
-    return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+// Перенесённая функция зерна (анимируется по TIME)
+float hash_noise(vec2 p, float t) {
+    vec2 p2 = p + vec2(mod(t * 17.13, 100.0), mod(t * 11.71, 100.0));
+    return fract(sin(dot(p2, vec2(12.9898, 78.233))) * 43758.5453) - 0.5;
 }
 
 vec3 quantize(vec3 c) {
@@ -63,24 +64,23 @@ vec3 quantize(vec3 c) {
 }
 
 void fragment() {
-    // Берем цвет с экрана
     vec4 src = texture(screen_texture, SCREEN_UV);
     vec3 col = src.rgb;
-    
-    // Координаты пикселя для узора
+
     vec2 ip = floor(FRAGCOORD.xy / pattern_scale);
 
     float d = 0.0;
     if (dither_mode >= 1 && dither_mode <= 3) d = bayer_offset(ivec2(ip), dither_mode);
     else if (dither_mode == 4) d = ign(ip) - 0.5;
 
-    float strength = auto_strength ? (1.0 / pow(max(float(palette_size), 1.0), 1.0 / 3.0)) : dither_strength;
+    float strength = auto_strength
+        ? (1.0 / pow(max(float(palette_size), 1.0), 1.0 / 3.0))
+        : dither_strength;
 
     col += d * strength;
 
-    // НОВОЕ: Добавляем случайный шум к цвету, чтобы разбить идеальные градиенты
-    float n = hash(ip) - 0.5; 
-    col += n * noise_amount;
+    // Зерно (заменяет старый noise_amount)
+    col += vec3(hash_noise(ip, TIME) * grain_strength);
 
     col = clamp(col, 0.0, 1.0);
     col = quantize(col);

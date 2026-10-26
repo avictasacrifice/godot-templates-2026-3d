@@ -3,10 +3,12 @@
 [ext_resource type="Script" uid="uid://pk362bmqemhg" path="res://_Game/Scene/bullet/bullet.gd" id="1_lp5t8"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1jhmp"]
-size = Vector3(0.1, 0.1, 0.1)
+size = Vector3(0.15, 0.15, 0.1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3njoo"]
 albedo_color = Color(0.4862745, 1, 1, 1)
+emission_enabled = true
+emission = Color(0.63000757, 0.4246061, 0.57393545, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_hl1nl"]
 material = SubResource("StandardMaterial3D_3njoo")

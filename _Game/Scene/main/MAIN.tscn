@@ -11,8 +11,12 @@ background_mode = 1
 background_color = Color(0.22670749, 0.22670752, 0.22670743, 1)
 background_energy_multiplier = 0.82
 ambient_light_source = 1
+ssao_enabled = true
+ssao_radius = 1.9
 glow_enabled = true
-glow_normalized = true
+glow_intensity = 0.84
+fog_enabled = true
+fog_light_color = Color(0.43114778, 0.46529013, 0.51840526, 1)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_hl1nl"]
 
@@ -25,11 +29,11 @@ albedo_color = Color(1, 1, 0.48235294, 1)
 shader = ExtResource("4_3njoo")
 shader_parameter/palette = PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 shader_parameter/palette_size = 16
-shader_parameter/dither_mode = 2
+shader_parameter/dither_mode = 1
 shader_parameter/auto_strength = true
 shader_parameter/dither_strength = 0.4
 shader_parameter/pattern_scale = 1.0
-shader_parameter/noise_amount = 0.03
+shader_parameter/grain_strength = 0.010000000475
 
 [node name="Main" type="Node3D" unique_id=223283744]
 
@@ -64,6 +68,39 @@ shape = SubResource("BoxShape3D_hl1nl")
 [node name="Enemy" parent="." unique_id=1859471518 instance=ExtResource("3_w20bv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5227563, 2.6736915)
 
+[node name="Enemy2" parent="." unique_id=630593048 instance=ExtResource("3_w20bv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5227563, 10.750144)
+
+[node name="Enemy3" parent="." unique_id=341010776 instance=ExtResource("3_w20bv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5227563, 25.923176)
+
+[node name="Enemy4" parent="." unique_id=2074479479 instance=ExtResource("3_w20bv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.70294, 2.5227563, 2.6736915)
+
+[node name="Enemy5" parent="." unique_id=577383417 instance=ExtResource("3_w20bv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.70294, 2.5227563, 10.750144)
+
+[node name="Enemy6" parent="." unique_id=1503067112 instance=ExtResource("3_w20bv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.70294, 2.5227563, 25.923176)
+
+[node name="Enemy7" parent="." unique_id=836717552 instance=ExtResource("3_w20bv")]
+transform = Transform3D(0.41691914, 0, -0.9089436, 0, 1, 0, 0.9089436, 0, 0.41691914, 0.5058565, 2.5227563, -17.386166)
+
+[node name="Enemy8" parent="." unique_id=1521940652 instance=ExtResource("3_w20bv")]
+transform = Transform3D(0.41691914, 0, -0.9089436, 0, 1, 0, 0.9089436, 0, 0.41691914, -6.835182, 2.5227563, -14.018939)
+
+[node name="Enemy9" parent="." unique_id=818930519 instance=ExtResource("3_w20bv")]
+transform = Transform3D(0.41691914, 0, -0.9089436, 0, 1, 0, 0.9089436, 0, 0.41691914, -20.626612, 2.5227563, -7.693012)
+
+[node name="Enemy10" parent="." unique_id=709819403 instance=ExtResource("3_w20bv")]
+transform = Transform3D(0.41691914, 0, -0.9089436, 0, 1, 0, 0.9089436, 0, 0.41691914, 33.86303, 2.5227563, 1.9070339)
+
+[node name="Enemy11" parent="." unique_id=450430863 instance=ExtResource("3_w20bv")]
+transform = Transform3D(0.41691914, 0, -0.9089436, 0, 1, 0, 0.9089436, 0, 0.41691914, 26.521992, 2.5227563, 5.2742605)
+
+[node name="Enemy12" parent="." unique_id=873805329 instance=ExtResource("3_w20bv")]
+transform = Transform3D(0.41691914, 0, -0.9089436, 0, 1, 0, 0.9089436, 0, 0.41691914, 12.730562, 2.5227563, 11.600187)
+
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1358943668]
 
 [node name="Shader" type="Control" parent="CanvasLayer" unique_id=1735017546]
@@ -87,4 +124,5 @@ script = ExtResource("5_53km8")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="Light" unique_id=1669331146]
 transform = Transform3D(0.6040323, -0.58093125, 0.54558593, 0.398339, 0.81300884, 0.42466766, -0.6902688, -0.03918485, 0.72249115, 0, 2, 0)
+light_energy = 0.646
 shadow_enabled = true
