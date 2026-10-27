@@ -65,24 +65,6 @@ transform = Transform3D(1.0000001, 0, 0, 0, 1, 0, 0, 0, 1.0000001, 0, 0, 0)
 transform = Transform3D(0.99999976, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999976, 0, 0, 0)
 shape = SubResource("BoxShape3D_hl1nl")
 
-[node name="Enemy" parent="." unique_id=1859471518 instance=ExtResource("3_w20bv")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5227563, 2.6736915)
-
-[node name="Enemy2" parent="." unique_id=630593048 instance=ExtResource("3_w20bv")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5227563, 10.750144)
-
-[node name="Enemy3" parent="." unique_id=341010776 instance=ExtResource("3_w20bv")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5227563, 25.923176)
-
-[node name="Enemy4" parent="." unique_id=2074479479 instance=ExtResource("3_w20bv")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.70294, 2.5227563, 2.6736915)
-
-[node name="Enemy5" parent="." unique_id=577383417 instance=ExtResource("3_w20bv")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.70294, 2.5227563, 10.750144)
-
-[node name="Enemy6" parent="." unique_id=1503067112 instance=ExtResource("3_w20bv")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.70294, 2.5227563, 25.923176)
-
 [node name="Enemy7" parent="." unique_id=836717552 instance=ExtResource("3_w20bv")]
 transform = Transform3D(0.41691914, 0, -0.9089436, 0, 1, 0, 0.9089436, 0, 0.41691914, 0.5058565, 2.5227563, -17.386166)
 
@@ -102,6 +84,7 @@ transform = Transform3D(0.41691914, 0, -0.9089436, 0, 1, 0, 0.9089436, 0, 0.4169
 transform = Transform3D(0.41691914, 0, -0.9089436, 0, 1, 0, 0.9089436, 0, 0.41691914, 12.730562, 2.5227563, 11.600187)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1358943668]
+layer = 300
 
 [node name="Shader" type="Control" parent="CanvasLayer" unique_id=1735017546]
 layout_mode = 3

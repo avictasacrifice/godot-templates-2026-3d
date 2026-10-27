@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://dqaf8qss06d7m"]
+
+[ext_resource type="Shader" uid="uid://6vvrsg3cndc6" path="res://_Game/Scene/main/dither.gdshader" id="1_4tmqj"]
+[ext_resource type="Script" uid="uid://da8ieq6gg25vu" path="res://_Game/Scene/menu/main_menu.gd" id="1_uh72w"]
+[ext_resource type="Script" uid="uid://budg5tjkdblb7" path="res://_Game/Scene/main/palette_controller.gd" id="2_a1nap"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hl1nl"]
+shader = ExtResource("1_4tmqj")
+shader_parameter/palette = PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/palette_size = 2
+shader_parameter/dither_mode = 2
+shader_parameter/auto_strength = true
+shader_parameter/dither_strength = 0.4
+shader_parameter/pattern_scale = 1.0
+shader_parameter/grain_strength = 0.025
+
+[node name="MainMenu" type="Control" unique_id=354147926]
+layout_mode = 3
+anchors_preset = 0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=588576838]
+layer = 300
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=519263632]
+material = SubResource("ShaderMaterial_hl1nl")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_a1nap")
+
+[node name="Control" type="Control" parent="." unique_id=2025825327]
+anchors_preset = 0
+script = ExtResource("1_uh72w")
+game_scene = "uid://d1n6oc3tfm8ls"
