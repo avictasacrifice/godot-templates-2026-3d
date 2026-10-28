@@ -5,7 +5,7 @@ extends CharacterBody3D
 # ============================================================
 
 # --- Основа ---
-var health: int = 100
+var health: int = 10
 const SPEED := 10.0
 const MAX_SPEED := 50.0
 const GRAVITY := 20.0
@@ -16,9 +16,14 @@ const GROUND_ACCEL := 18.0
 const FRICTION := 12.0
 const STOP_SPEED := 1.8
 
-# --- Воздух ---
-const AIR_ACCEL := 8.0               # ↓ слабее, бхоп не разгоняет как раньше
-const AIR_TURN_RATE := 4.0           # ↓ меньше руления в воздухе
+# --- Воздух (подстроено под уворачивание) ---
+const AIR_ACCEL := 12.0              # ↑ можно резко менять направление в прыжке
+const AIR_TURN_RATE := 5.5           # ↑ лучше руление на скорости
+
+# --- Бхоп ---
+const BHOP_SOFT_CAP := 16.0          # выше этой скорости каждый прыжок слегка "съедает" излишек
+const BHOP_EXCESS_KEEP := 0.88       # какую долю излишка сохраняем за прыжок
+const JUMP_CUT := 0.55               # отпустил пробел раньше -> прыжок ниже (быстрые мелкие уклонения)
 
 # --- Jump feel ---
 const COYOTE_TIME := 0.12
@@ -30,33 +35,45 @@ const JUMP_BUFFER := 0.15
 const MOUSE_SENSITIVITY := 0.0026
 const PITCH_LIMIT := deg_to_rad(88.0)
 
-# --- Compress / Launch (главный источник скорости) ---
+# --- Compress / Launch ---
 const COMPRESS_DECEL := 2.0
 const COMPRESS_STEER := 22.0
-const COMPRESS_AIR_STEER := 14.0     # ↓
+const COMPRESS_AIR_STEER := 14.0
 const COMPRESS_AIR_DECEL_MULT := 0.35
 const COMPRESS_WINDOW_MIN := 0.12
 const COMPRESS_WINDOW_MAX := 0.40
 const COMPRESS_OVERHOLD := 0.75
-const LAUNCH_IMPULSE := 28.0         # ↑ сильнее
-const LAUNCH_UP_POP := 5.5           # ↑
+const LAUNCH_IMPULSE := 28.0
+const LAUNCH_UP_POP := 5.5
 const LAUNCH_MIN_CHARGE := 0.25
-const LAUNCH_COOLDOWN := 0.25        # защита от спама, не влияет на игру
+const LAUNCH_COOLDOWN := 0.25
 const TUCK_DURATION := 0.22
 
 # --- Dash window ---
-const DASH_WINDOW := 0.40            # ↑ дэш длиннее
+const DASH_WINDOW := 0.40
 const DASH_AIR_ACCEL_MULT := 1.8
 const DASH_FRICTION_MULT := 0.15
 const DASH_FOV_KICK := 18.0
-const DASH_TURN_RATE := 7.0          # ↓
+const DASH_TURN_RATE := 7.0
 
-# --- Отбрасывание от оружия ---
-const WEAPON_KNOCKBACK := 3.5        # ↓
-const WEAPON_KNOCKBACK_UP_MULT := 1.6 # ↓
+# --- Отбрасывание от оружия (сильно уменьшено) ---
+const WEAPON_KNOCKBACK := 1.0        # было 3.5
+const WEAPON_KNOCKBACK_UP_MULT := 0.5 # было 1.6
+const WEAPON_KNOCKBACK_MAX := 2.5    # потолок прироста скорости за выстрел
+
+# --- Прицеливание (рейкаст + помощь прицела) ---
+const AIM_RANGE := 200.0
+const AIM_ASSIST_RADIUS := 0.6       # "примерно попал" — радиус сферы вокруг линии прицела
+
+## Слои, по которым стреляем лучом (по умолчанию всё).
+@export_flags_3d_physics var aim_mask: int = 0xFFFFFFFF
+## Слой(и) врагов для aim-assist. Поставь сюда физический слой врагов.
+## Если 0 — помощь прицела отключена, работает только точный луч.
+@export_flags_3d_physics var assist_mask: int = 2
 
 @export var BulletScene : PackedScene
 
+@export var gameover: Control 
 @onready var camera: Camera3D = $Camera3D
 @onready var muzzle: Marker3D = $Camera3D/Muzzle
 
@@ -73,6 +90,7 @@ var _jump_buffer_timer := 0.0
 var _coyote_timer := 0.0
 var _dash_timer := 0.0
 var _launch_cooldown := 0.0
+var _jump_cut_ready := false
 
 var _col: CollisionShape3D
 var _col_orig_height := 0.0
@@ -149,11 +167,21 @@ func _physics_process(delta: float) -> void:
 		if _is_compressing:
 			_end_compress(false)
 		velocity.y = JUMP_VELOCITY
+		_apply_bhop_soft_cap()
 		_jump_buffer_timer = 0.0
 		_coyote_timer = 0.0
+		_jump_cut_ready = true
 		jumped = true
 
-	# --- Tuck / Launch: работает ВЕЗДЕ, всегда ---
+	# --- Короткий прыжок при раннем отпускании пробела ---
+	if _jump_cut_ready:
+		if velocity.y <= 0.0:
+			_jump_cut_ready = false
+		elif not Input.is_action_pressed("space"):
+			velocity.y *= JUMP_CUT
+			_jump_cut_ready = false
+
+	# --- Tuck / Launch ---
 	var shift_held := Input.is_action_pressed("compress")
 	var shift_just := Input.is_action_just_pressed("compress")
 	var tuck_just := Input.is_action_just_pressed("tuck")
@@ -227,6 +255,21 @@ func _rotate_horizontal_toward(vel: Vector3, target_dir: Vector3, max_radians: f
 	vel.x = new_dir.x * hs
 	vel.z = new_dir.z * hs
 	return vel
+
+
+## Мягкий потолок бхопа: излишек скорости над BHOP_SOFT_CAP слегка гасится
+## при каждом прыжке. Во время дэша от лонча не трогаем.
+func _apply_bhop_soft_cap() -> void:
+	if _dash_timer > 0.0:
+		return
+	var hv := Vector3(velocity.x, 0.0, velocity.z)
+	var hs := hv.length()
+	if hs <= BHOP_SOFT_CAP:
+		return
+	var new_hs := BHOP_SOFT_CAP + (hs - BHOP_SOFT_CAP) * BHOP_EXCESS_KEEP
+	var r := new_hs / hs
+	velocity.x *= r
+	velocity.z *= r
 
 
 func _process_ground(delta: float, wish_dir: Vector3) -> void:
@@ -322,6 +365,7 @@ func _end_compress(do_launch: bool) -> void:
 			if velocity.y < up:
 				velocity.y = up
 
+			_jump_cut_ready = false # поп от лонча не должен обрезаться
 			_dash_timer = DASH_WINDOW
 			_launch_cooldown = LAUNCH_COOLDOWN
 			Shaker.play(0.18, 0.3, Tween.TRANS_EXPO)
@@ -353,24 +397,110 @@ func _set_crouch_shape(crouched: bool) -> void:
 
 
 # ============================================================
+#  ПРИЦЕЛИВАНИЕ
+# ============================================================
+## Возвращает { "point": Vector3, "collider": Object или null }.
+## 1) Точный луч из центра камеры.
+## 2) Если луч промахнулся — сферический свип (aim-assist) по врагам.
+func _find_aim_target() -> Dictionary:
+	var space := get_world_3d().direct_space_state
+	var from := _aim_origin()
+	var dir := -camera.global_transform.basis.z
+	var to := from + dir * AIM_RANGE
+	var self_rid := get_rid()
+
+	# --- 1. Точный луч ---
+	var ray := PhysicsRayQueryParameters3D.create(from, to, aim_mask, [self_rid])
+	ray.collide_with_areas = true
+	var hit := space.intersect_ray(ray)
+	if not hit.is_empty():
+		return {"point": hit.position, "collider": hit.collider}
+
+	# --- 2. Помощь прицела ---
+	if assist_mask != 0:
+		var sphere := SphereShape3D.new()
+		sphere.radius = AIM_ASSIST_RADIUS
+
+		var q := PhysicsShapeQueryParameters3D.new()
+		q.shape = sphere
+		q.transform = Transform3D(Basis.IDENTITY, from)
+		q.motion = dir * AIM_RANGE
+		q.collision_mask = assist_mask
+		q.exclude = [self_rid]
+		q.collide_with_areas = true
+
+		var motion := space.cast_motion(q)
+		if motion.size() == 2 and motion[1] < 1.0:
+			# Сфера в точке касания -> узнаём, кого и где задели.
+			q.transform = Transform3D(Basis.IDENTITY, from + dir * AIM_RANGE * motion[1])
+			q.motion = Vector3.ZERO
+			q.margin = 0.05
+			var rest := space.get_rest_info(q)
+			if not rest.is_empty():
+				var target_point: Vector3 = rest.point
+				var target_collider := instance_from_id(rest.collider_id)
+
+				# Проверка прямой видимости: стены между нами и врагом не пропускаем.
+				var los := PhysicsRayQueryParameters3D.create(from, target_point, aim_mask, [self_rid])
+				los.collide_with_areas = true
+				var los_hit := space.intersect_ray(los)
+				if los_hit.is_empty() or los_hit.collider == target_collider:
+					return {"point": target_point, "collider": target_collider}
+
+	# --- Промах: летим вдоль линии прицела ---
+	return {"point": to, "collider": null}
+
+
+# ============================================================
 #  ОРУЖИЕ
 # ============================================================
+## Реальная точка, из которой камера "видит" мир: Shaker двигает камеру
+## через h_offset/v_offset, а global_position при этом не меняется.
+func _aim_origin() -> Vector3:
+	var b := camera.global_transform.basis
+	return camera.global_position + b.x * camera.h_offset + b.y * camera.v_offset
+
+
 func shoot() -> void:
+	# Сначала считаем цель (до тряски камеры), потом эффекты.
+	var target := _find_aim_target()
+	var target_point: Vector3 = target.point
+
 	Audio.play(&"shot")
 	Shaker.play(0.15, 0.25, Tween.TRANS_EXPO)
 
-	var bullet := BulletScene.instantiate()
+	var bullet := BulletScene.instantiate() as Node3D
 	get_tree().current_scene.add_child(bullet)
-	bullet.global_transform = muzzle.global_transform
+	# Старт на линии прицела, чуть впереди камеры (а не из смещённого дула).
+	var origin := _aim_origin() - camera.global_transform.basis.z * 0.5
+	bullet.global_transform = Transform3D(camera.global_transform.basis, origin)
 
+	# Разворачиваем пулю к точке попадания (пуля летит по -Z).
+	var to_target: Vector3 = target_point - bullet.global_position
+	if to_target.length() > 0.1:
+		var up := Vector3.UP
+		if absf(to_target.normalized().dot(Vector3.UP)) > 0.999:
+			up = Vector3.RIGHT
+		bullet.look_at(target_point, up)
+
+	# Необязательно: пуля может узнать цель (например, чтобы гарантированно попасть).
+	if bullet.has_method("set_target"):
+		bullet.set_target(target_point, target.collider)
+
+	_apply_weapon_knockback()
+
+
+func _apply_weapon_knockback() -> void:
 	var aim := -camera.global_transform.basis.z
 	var knock := -aim * WEAPON_KNOCKBACK
 	if knock.y > 0.0:
 		knock.y *= WEAPON_KNOCKBACK_UP_MULT
+	knock = knock.limit_length(WEAPON_KNOCKBACK_MAX)
 	velocity += knock
+
 
 func take_damage(amount: int) -> void:
 	health -= amount
 	print("Игрок: ", health)
 	if health <= 0:
-		pass
+		gameover.build("пососи")

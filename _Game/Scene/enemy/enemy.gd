@@ -129,6 +129,7 @@ func _try_hit_player(dist: float) -> void:
 #  ПОЛУЧЕНИЕ УРОНА / СМЕРТЬ
 # ============================================================
 func take_damage(amount: int) -> void:
+	Audio.play(&"hit")
 	if _is_dead:
 		return
 

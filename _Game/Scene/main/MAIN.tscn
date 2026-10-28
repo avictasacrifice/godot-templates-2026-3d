@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://b6q1x3okocxa6" path="res://_Game/Scene/enemy/enemy.tscn" id="3_w20bv"]
 [ext_resource type="Shader" uid="uid://6vvrsg3cndc6" path="res://_Game/Scene/main/dither.gdshader" id="4_3njoo"]
 [ext_resource type="Script" uid="uid://budg5tjkdblb7" path="res://_Game/Scene/main/palette_controller.gd" id="5_53km8"]
+[ext_resource type="PackedScene" uid="uid://md4i81caa8hl" path="res://_Game/Scene/menu/game_over.tscn" id="6_53km8"]
 
 [sub_resource type="Environment" id="Environment_hl1nl"]
 background_mode = 1
@@ -40,10 +41,11 @@ shader_parameter/grain_strength = 0.010000000475
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1217041312]
 environment = SubResource("Environment_hl1nl")
 
-[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=1616475035]
+[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=1616475035 node_paths=PackedStringArray("gameover")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8171024, 0)
 script = ExtResource("1_dyvsr")
 BulletScene = ExtResource("2_67t6u")
+gameover = NodePath("../CanvasLayer/Shader/ColorRect/GameOver")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D" unique_id=2129612299]
 shape = SubResource("CapsuleShape3D_hl1nl")
@@ -53,6 +55,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
 [node name="Muzzle" type="Marker3D" parent="CharacterBody3D/Camera3D" unique_id=1806626888]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.03)
+gizmo_extents = 0.0
 
 [node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=1023346647]
 transform = Transform3D(100, 0, 0, 0, 0.1, 0, 0, 0, 100, 0, 0, 0)
@@ -102,6 +105,24 @@ offset_right = 34562.0
 offset_bottom = 26624.0
 mouse_filter = 2
 script = ExtResource("5_53km8")
+
+[node name="GameOver" parent="CanvasLayer/Shader/ColorRect" unique_id=125990859 instance=ExtResource("6_53km8")]
+layout_mode = 1
+game_scene = "uid://d1n6oc3tfm8ls"
+menu_scene = "uid://dqaf8qss06d7m"
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=1231497691]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_right = 4.0
+offset_bottom = 4.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(2, 2)
+mouse_filter = 2
 
 [node name="Light" type="Node3D" parent="." unique_id=1854685419]
 

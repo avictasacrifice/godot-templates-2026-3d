@@ -18,6 +18,7 @@ size = Vector3(0.1, 0.1, 0.1)
 collision_layer = 0
 collision_mask = 2
 script = ExtResource("1_lp5t8")
+hit_mask = 4294967294
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1769492564]
 shape = SubResource("BoxShape3D_1jhmp")
